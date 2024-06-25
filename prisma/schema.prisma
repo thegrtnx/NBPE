@@ -12,3 +12,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  userid        String        @id @default(uuid()) 
+  email_address String
+  password      String
+  Otp           String?
+}
