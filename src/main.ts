@@ -28,19 +28,17 @@ async function bootstrap() {
   );
 
   const swaggerOptions = new DocumentBuilder()
-    .setTitle('Nestjs Mailer')
+    .setTitle('NBPE')
     .setDescription(
-      'A nestjs project to send emails with nestjs mail module, improvmx smtp or gmail smtp with email templates',
+      'Nestjs BoilerPlate with Email and Telegram Notifications',
     )
     .setVersion('1.0.0')
     .addServer(`http://localhost:${port}`, 'Local environment')
-    .addServer('https://testmail.mordules.com', 'Production')
     .addBearerAuth(
       { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
       'Authorization',
     )
     .addTag('Server', 'Endpoint for Server functions')
-    .addTag('Authentication', 'Endpoint for Auth functions')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
