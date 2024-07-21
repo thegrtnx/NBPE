@@ -1,15 +1,14 @@
-
 # NBPE
 
-Nest.js Boilerplate with Email and Telegram Notification
-
+Nest.js + Prisma Boilerplate
 
 ## Features
 
 - Send Emails using custom templates
 - Support custom SMTP like gmail, improvmx e.t.c
-- Telegram Bot Notification Support 
-
+- Telegram Bot Notification Support
+- Error Logging
+- Random Generated Profile Picture
 
 ## Run Locally
 
@@ -54,9 +53,3 @@ Start the server with watch
 ## Authors
 
 - [@thegrtnx](https://www.github.com/thegrtnx)
-
-
-## Documentation
-
-[Documentation](https://smtp.mordule.com/v1/)
-

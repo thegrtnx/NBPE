@@ -8,12 +8,7 @@ export class SendMailsService {
 
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendVerificationEmail(
-    to: any,
-    subject: string,
-    template: any,
-    context: any,
-  ) {
+  async sendEmail(to: any, subject: string, template: any, context: any) {
     try {
       await this.mailerService.sendMail({
         to,
@@ -30,7 +25,8 @@ export class SendMailsService {
         );
       } else {
         throw new InternalServerErrorException(
-          'Failed to send verification email. Please try again later.',
+          'Failed to send verification email.',
+          error,
         );
       }
     }

@@ -6,8 +6,14 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { prismaError } from 'prisma-better-errors';
+import { Role } from 'src/common/enum';
+
+interface User {
+  role: Role;
+  // Add other user properties if needed
+}
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -16,6 +22,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    const capitalizeFirstLetter = (str) =>
+      str.replace(/^\w/, (c) => c.toUpperCase());
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal Server Error';
@@ -23,6 +33,19 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       message = exception.message;
+
+      if (status === HttpStatus.UNAUTHORIZED) {
+        const user = request.user as User | undefined;
+
+        if (user && user.role === Role.ADMIN) {
+          message = 'Authorized for admin only';
+        }
+      } else if (
+        status === HttpStatus.FORBIDDEN &&
+        message.includes('Forbidden resource')
+      ) {
+        message = 'This action is forbidden for you';
+      }
     } else if (this.isPrismaError(exception)) {
       const prismaErrorInstance = new prismaError(exception);
 
@@ -30,22 +53,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         prismaErrorInstance.metaData &&
         prismaErrorInstance.metaData['target']
       ) {
-        if (
-          prismaErrorInstance.metaData['target'] === null ||
-          prismaErrorInstance.metaData['target'] === ''
-        ) {
+        const target = prismaErrorInstance.metaData['target'];
+        if (target === null || target === '') {
           status = prismaErrorInstance.statusCode;
           message = prismaErrorInstance.message;
         } else {
           status = prismaErrorInstance.statusCode;
-          message =
-            prismaErrorInstance.message +
-            ' on ' +
-            prismaErrorInstance.metaData['target'];
+          message = capitalizeFirstLetter(`${target} already exists`);
         }
-        // } else if (prismaErrorInstance.message === 'P2025') {
-        //   status = HttpStatus.NOT_FOUND;
-        //   message = 'The requested resource was not found.';
       } else {
         status = prismaErrorInstance.statusCode;
         message = prismaErrorInstance.message;

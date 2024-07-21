@@ -8,7 +8,7 @@ import { SendMailsService } from './sendMail.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Make ConfigModule global
+      isGlobal: true,
     }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
